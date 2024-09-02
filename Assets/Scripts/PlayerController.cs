@@ -26,8 +26,8 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float x = playerControls.player.Move.ReadValue<Vector3>().x;
-        float z = playerControls.player.Move.ReadValue<Vector3>().y;
+        float x = playerControls.player.Move.ReadValue<Vector2>().x;
+        float z = playerControls.player.Move.ReadValue<Vector2>().y;
 
         Debug.Log(x + "," + z);
 
