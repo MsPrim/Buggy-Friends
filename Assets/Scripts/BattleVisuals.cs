@@ -13,12 +13,20 @@ public class BattleVisuals : MonoBehaviour
     private int maxHealth;
     private int level;
 
+    private Animator anim;
+
     private const string LEVEL_ABB = "Lvl: ";
+
+    private const string IS_ATTACK_PARAM = "IsAttack";
+    private const string IS_HIT_PARAM = "IsHit";
+    private const string IS_DEAD_PARAM = "IsDead";
 
     // Start is called before the first frame update
     void Start()
     {
-        SetStartingValues(10, 10, 5);
+        anim = gameObject.GetComponent<Animator>();
+        SetStartingValues(25, 25, 99);
+        PlayAttackAnimation();
     }
 
     public void SetStartingValues(int currHealth, int maxHealth, int level)
@@ -33,7 +41,12 @@ public class BattleVisuals : MonoBehaviour
     public void ChangeHealth(int currHealth) 
     {
         this.currHealth = currHealth;
-        // if health is 0 -> play death animation -> Destroy our battle visual
+        if(currHealth<=0)
+        {
+            PlayDeathAnimation();
+            Destroy(gameObject, 1f);
+        }
+        UpdateHealthBar();
     }
 
 
@@ -41,5 +54,20 @@ public class BattleVisuals : MonoBehaviour
     {
         healthBar.maxValue = maxHealth;
         healthBar.value = currHealth;
+    }
+
+    public void PlayAttackAnimation()
+    {
+        anim.SetTrigger(IS_ATTACK_PARAM);
+    }
+
+    public void PlayHitAnimation()
+    {
+        anim.SetTrigger(IS_HIT_PARAM);
+    }
+
+    public void PlayDeathAnimation()
+    {
+        anim.SetTrigger(IS_DEAD_PARAM);
     }
 }
