@@ -554,6 +554,7 @@ GameObject:
   - component: {fileID: 472883182}
   - component: {fileID: 472883181}
   - component: {fileID: 472883183}
+  - component: {fileID: 472883184}
   m_Layer: 0
   m_Name: JohnBattleVisual
   m_TagString: Untagged
@@ -651,6 +652,20 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &472883184
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 472883180}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7d703a6db2e11843a5cce1abbe93004, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  healthBar: {fileID: 2096828199}
+  levelText: {fileID: 907092105}
 --- !u!1 &572527156
 GameObject:
   m_ObjectHideFlags: 0
