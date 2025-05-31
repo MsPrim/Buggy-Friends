@@ -36,6 +36,11 @@ public class EnemyManager : MonoBehaviour
             }
         }
     }
+
+    public List<Enemy> GetCurrentEnemies()
+    {
+        return currentEnemies;
+    }
 }
 
 [System.Serializable]
