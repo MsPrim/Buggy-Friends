@@ -39,6 +39,10 @@ public class BattleSystem : MonoBehaviour
 
             tempEntity.SetEntityValues(currentParty[i].MemberName, currentParty[i].CurrHealth, currentParty[i].MaxHealth, currentParty[i].Initiative, currentParty[i].Strength, currentParty[i].Level, true);
 
+            BattleVisuals tempBattleVisuals = Instantiate(currentParty[i].MemberBattleVisualPrefab, partySpawnPoints[i].position, Quaternion.identity).GetComponent<BattleVisuals>();
+            tempBattleVisuals.SetStartingValues(currentParty[i].MaxHealth, currentParty[i].MaxHealth, currentParty[i].Level);
+            tempEntity.BattleVisuals = tempBattleVisuals;
+
             allBattlers.Add(tempEntity);
             playerBattlers.Add(tempEntity);
 
@@ -55,6 +59,10 @@ public class BattleSystem : MonoBehaviour
             BattleEntities tempEntity = new BattleEntities();
 
             tempEntity.SetEntityValues(currentEnemies[i].EnemyName, currentEnemies[i].CurrHealth, currentEnemies[i].MaxHealth, currentEnemies[i].Initiative, currentEnemies[i].Strength, currentEnemies[i].Level, false);
+
+            BattleVisuals tempBattleVisuals = Instantiate(currentEnemies[i].EnemyVisualPrefab, enemySpawnPoints[i].position, Quaternion.identity).GetComponent<BattleVisuals>();
+            tempBattleVisuals.SetStartingValues(currentEnemies[i].MaxHealth, currentEnemies[i].MaxHealth, currentEnemies[i].Level);
+            tempEntity.BattleVisuals = tempBattleVisuals;
 
             allBattlers.Add(tempEntity);
             enemyBattlers.Add(tempEntity);
@@ -75,6 +83,7 @@ public class BattleEntities
     public int Strength;
     public int Level;
     public bool IsPlayer;
+    public BattleVisuals BattleVisuals;
 
     public void SetEntityValues(string name, int currHealth, int maxHealth, int initiative, int strength, int level, bool isPlayer)
     {
