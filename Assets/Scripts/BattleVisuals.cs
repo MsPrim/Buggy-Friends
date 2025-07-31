@@ -22,7 +22,7 @@ public class BattleVisuals : MonoBehaviour
     private const string IS_DEAD_PARAM = "IsDead";
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         anim = gameObject.GetComponent<Animator>();
         //SetStartingValues(25, 25, 99);

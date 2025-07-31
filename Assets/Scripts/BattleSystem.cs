@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UIElements;
+using UnityEngine.Rendering;
 
 public class BattleSystem : MonoBehaviour
 {
@@ -21,6 +22,8 @@ public class BattleSystem : MonoBehaviour
     [SerializeField] private GameObject battleMenu;
     [SerializeField] private GameObject enemySelectionMenu;
     [SerializeField] private TextMeshProUGUI actionText;
+    [SerializeField] private GameObject bottomTextPopUp;
+    [SerializeField] private TextMeshProUGUI bottomText;
 
     private PartyManager partyManager;
     private EnemyManager enemyManager;
@@ -36,7 +39,8 @@ public class BattleSystem : MonoBehaviour
 
         CreatePartyEntities();
         CreateEnemyEntities();
-        ShowBattleMenu();   
+        ShowBattleMenu();
+        AttackAction(allBattlers[0], allBattlers[1]);
     }
 
     private void CreatePartyEntities()
@@ -152,6 +156,16 @@ public class BattleSystem : MonoBehaviour
         //else
             //show the battle meny for the mext player 
     }
+
+    private void AttackAction(BattleEntities currAttacker, BattleEntities currTarget)
+    {
+        int damage = currAttacker.Strength; // get damage (can use an algorithm)
+        currAttacker.BattleVisuals.PlayAttackAnimation(); // play the attack animation 
+        currTarget.CurrHealth -= damage; // deal the damage 
+        currTarget.BattleVisuals.PlayHitAnimation(); // play their hit animation 
+        currTarget.UpdateUI(); // update the UI 
+        bottomText.text = string.Format("{0} attacks {1} for {2} damage", currAttacker.Name, currTarget.Name,damage);
+    }
 }
 
 [System.Serializable]
@@ -184,5 +198,10 @@ public class BattleEntities
     public void SetTarget(int target)
     {
         Target = target;
+    }
+
+    public void UpdateUI()
+    {
+        BattleVisuals.ChangeHealth(CurrHealth);
     }
 }
