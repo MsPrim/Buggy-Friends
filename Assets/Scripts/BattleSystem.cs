@@ -123,11 +123,43 @@ public class BattleSystem : MonoBehaviour
         //change the buttons text
 
     }
+
+    public void SelectEnemy(int currentEnemy)
+    {
+        // setting the current members target 
+        BattleEntities currentPlayerEntity = playerBattlers[currentPlayer];
+        currentPlayerEntity.SetTarget(allBattlers.IndexOf(enemyBattlers[currentEnemy]));
+
+        //tell the battle system this member intends to attack
+        currentPlayerEntity.BattleAction = BattleEntities.Action.Attack;
+
+        //increment through our party members 
+        currentPlayer++;
+
+        if(currentPlayer >= playerBattlers.Count)
+        {
+            //Start the battle
+            Debug.Log("Start the battle!");
+            Debug.Log("We are attacking: " + allBattlers[currentPlayerEntity.Target].Name);
+        }
+        else
+        {
+            enemySelectionMenu.SetActive(false); //show the battle menu for the next player 
+            ShowBattleMenu();
+        }
+        //if all players have selected an action
+            // start the battle 
+        //else
+            //show the battle meny for the mext player 
+    }
 }
 
 [System.Serializable]
 public class BattleEntities
 {
+    public enum Action { Attack, Run}
+    public Action BattleAction;
+
     public string Name;
     public int CurrHealth;
     public int MaxHealth;
@@ -136,6 +168,7 @@ public class BattleEntities
     public int Level;
     public bool IsPlayer;
     public BattleVisuals BattleVisuals;
+    public int Target;
 
     public void SetEntityValues(string name, int currHealth, int maxHealth, int initiative, int strength, int level, bool isPlayer)
     {
@@ -146,5 +179,10 @@ public class BattleEntities
         Strength = strength;
         Level = level;
         IsPlayer = isPlayer;
+    }
+
+    public void SetTarget(int target)
+    {
+        Target = target;
     }
 }
