@@ -35,6 +35,8 @@ public class BattleSystem : MonoBehaviour
     private int currentPlayer;
 
     private const string ACTION_MESSAGE = "'s Action";
+    private const string WIN_MESSAGE = "Your party won the battle!";
+    private const int TURN_DURATION = 2;
 
     // Start is called before the first frame update
     void Start()
@@ -63,7 +65,8 @@ public class BattleSystem : MonoBehaviour
             {
                 case BattleEntities.Action.Attack:
                     //do the attack
-                    Debug.Log(allBattlers[i].Name + "is attacking: " + allBattlers[allBattlers[i].Target].Name);
+                    //Debug.Log(allBattlers[i].Name + "is attacking: " + allBattlers[allBattlers[i].Target].Name);
+                    yield return StartCoroutine(AttackRoutine(i));
                     break;
                 case BattleEntities.Action.Run:
                     //run
@@ -83,6 +86,52 @@ public class BattleSystem : MonoBehaviour
 
         yield return null;
         //if we haven't won or lost, repeat the loop by opening the battle menu
+    }
+
+    private IEnumerator AttackRoutine(int i)
+    {
+        // players turn 
+        if (allBattlers[i].IsPlayer == true)
+        {
+            // attack selected enemy (attack action)
+            BattleEntities currAttacker = allBattlers[i];
+            BattleEntities currTarget = allBattlers[currAttacker.Target];
+            AttackAction(currAttacker, currTarget);
+
+            // wait a few seconds 
+            yield return new WaitForSeconds(TURN_DURATION);
+
+            // kill the enemy 
+            if(currTarget.CurrHealth <=0)
+            {
+                bottomText.text = string.Format("{0} defeated {1}", currAttacker.Name, currTarget.Name); 
+                yield return new WaitForSeconds(TURN_DURATION); // wait a few seconds
+                enemyBattlers.Remove(currTarget); 
+                allBattlers.Remove(currTarget); 
+
+                if(enemyBattlers.Count <=0)
+                {
+                    state = BattleState.Won;
+                    bottomText.text = WIN_MESSAGE;
+                    yield return new WaitForSeconds(TURN_DURATION); // wait a few seconds
+                    Debug.Log("Go back to overworld scene");
+                }
+            }
+
+            // if no enemies remain 
+
+
+            // -> we won the battle 
+
+        }
+
+        // enemies turn 
+        // attack selected party member (attack action)
+        // wait a few seconds 
+        // kill the party member 
+
+        // if no party members remain 
+        // -> we lost the battle 
     }
 
     private void CreatePartyEntities()
