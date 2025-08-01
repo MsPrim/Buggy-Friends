@@ -8,9 +8,14 @@ using UnityEngine.Rendering;
 
 public class BattleSystem : MonoBehaviour
 {
+    [SerializeField] private enum BattleState { Start, Selection, Battle, Won, Lost, Run }
+
+    [Header("Battle State")]
+    [SerializeField] private BattleState state;
+
     [Header("Spawn Points")]
-    [SerializeField] private Transform[] partySpawnPoints;
-    [SerializeField] private Transform[] enemySpawnPoints;
+    [SerializeField] private Transform[] partySpawnPoints; 
+    [SerializeField] private Transform[] enemySpawnPoints; 
 
     [Header("Battlers")]
     [SerializeField] private List<BattleEntities> allBattlers = new List<BattleEntities>();
@@ -40,7 +45,44 @@ public class BattleSystem : MonoBehaviour
         CreatePartyEntities();
         CreateEnemyEntities();
         ShowBattleMenu();
-        AttackAction(allBattlers[0], allBattlers[1]);
+        //AttackAction(allBattlers[0], allBattlers[1]);
+    }
+
+    private IEnumerator BattleRoutine()
+    {
+        enemySelectionMenu.SetActive(false); // enemy selection menu disabled 
+        state = BattleState.Battle; //change our state to the battle state 
+        bottomTextPopUp.SetActive(true); //enable our bottom text
+        
+        //loop through all our battlers 
+            //-> do their approriate action 
+
+        for (int i = 0; i < allBattlers.Count; i++)
+        {
+            switch(allBattlers[i].BattleAction)
+            {
+                case BattleEntities.Action.Attack:
+                    //do the attack
+                    Debug.Log(allBattlers[i].Name + "is attacking: " + allBattlers[allBattlers[i].Target].Name);
+                    break;
+                case BattleEntities.Action.Run:
+                    //run
+                    break;
+                default:
+                    Debug.Log("Error - incorrect battle action");
+                    break;
+            }
+        }
+
+        if (state == BattleState.Battle)
+        {
+            bottomTextPopUp.SetActive(false);
+            currentPlayer = 0;
+            ShowBattleMenu();
+        }
+
+        yield return null;
+        //if we haven't won or lost, repeat the loop by opening the battle menu
     }
 
     private void CreatePartyEntities()
@@ -144,7 +186,8 @@ public class BattleSystem : MonoBehaviour
         {
             //Start the battle
             Debug.Log("Start the battle!");
-            Debug.Log("We are attacking: " + allBattlers[currentPlayerEntity.Target].Name);
+            StartCoroutine(BattleRoutine());
+            
         }
         else
         {
