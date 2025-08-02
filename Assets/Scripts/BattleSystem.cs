@@ -38,7 +38,10 @@ public class BattleSystem : MonoBehaviour
     private const string ACTION_MESSAGE = "'s Action";
     private const string WIN_MESSAGE = "Your party won the battle!";
     private const string LOSE_MESSAGE = "Your party has been defeated";
+    private const string SUCCESSFULLY_RAN_MESSAGE = "Your party ran away";
+    private const string UNSUCCESSFULLY_RAN_MESSAGE = "Your party failed to run";
     private const int TURN_DURATION = 2;
+    private const int RUN_CHANCE = 50;
     private const string OVERWORLD_SCENE = "OverworldScene";
 
     // Start is called before the first frame update
@@ -75,7 +78,7 @@ public class BattleSystem : MonoBehaviour
                         yield return StartCoroutine(AttackRoutine(i));
                         break;
                     case BattleEntities.Action.Run:
-                        //run
+                        yield return StartCoroutine(RunRoutine());
                         break;
                     default:
                         Debug.Log("Error - incorrect battle action");
@@ -162,6 +165,30 @@ public class BattleSystem : MonoBehaviour
                     yield return new WaitForSeconds(TURN_DURATION); // wait a few seconds 
                     Debug.Log("Game Over");
                 }
+            }
+        }
+    }
+
+    private IEnumerator RunRoutine()
+    {
+        if(state == BattleState.Battle)
+        {
+            if(Random.Range(1, 101) >= RUN_CHANCE)
+            {
+                //We have run away
+
+                bottomText.text = SUCCESSFULLY_RAN_MESSAGE; //set our bottom text to tell us we ran away 
+                state = BattleState.Run; //set our battle state to run
+                allBattlers.Clear(); // clear our all battlers list
+                yield return new WaitForSeconds(TURN_DURATION); // // wait a few seconds 
+                SceneManager.LoadScene(OVERWORLD_SCENE);// load the overworld scene 
+                yield break;
+            }
+            else
+            {
+                //we failed to run away
+                bottomText.text = UNSUCCESSFULLY_RAN_MESSAGE; //set our bottom text to say we failed
+                yield return new WaitForSeconds(TURN_DURATION); // wait a few seconds 
             }
         }
     }
@@ -330,6 +357,34 @@ public class BattleSystem : MonoBehaviour
     private void DetermineBattleOrder()
     {
         allBattlers.Sort((bi1, bi2) => -bi1.Initiative.CompareTo(bi2.Initiative)); //sorts list by initiative in ascending order.
+    }
+
+    public void SelectRunAction()
+    {
+        state = BattleState.Selection;
+        // setting the current members target 
+        BattleEntities currentPlayerEntity = playerBattlers[currentPlayer];
+
+        //tell the battle system we intend to run
+        currentPlayerEntity.BattleAction = BattleEntities.Action.Run;
+
+        battleMenu.SetActive(false);
+
+        //increment through our party members 
+        currentPlayer++;
+
+        if (currentPlayer >= playerBattlers.Count)
+        {
+            //Start the battle
+            Debug.Log("Start the battle!");
+            StartCoroutine(BattleRoutine());
+
+        }
+        else
+        {
+            enemySelectionMenu.SetActive(false); //show the battle menu for the next player 
+            ShowBattleMenu();
+        }
     }
 }
 

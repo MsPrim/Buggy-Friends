@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: John
   m_EditorClassIdentifier: 
   MemberName: John
-  StartingLevel: 1
-  BaseHealth: 10
+  StartingLevel: 5
+  BaseHealth: 20
   BaseStr: 5
   BaseInitiative: 5
   MemberBattleVisualPrefab: {fileID: 2315023192297464035, guid: 2e7c11e9777f1674fa85fc74141c4be5, type: 3}
