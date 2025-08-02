@@ -36,6 +36,7 @@ public class BattleSystem : MonoBehaviour
 
     private const string ACTION_MESSAGE = "'s Action";
     private const string WIN_MESSAGE = "Your party won the battle!";
+    private const string LOSE_MESSAGE = "Your party has been defeated";
     private const int TURN_DURATION = 2;
 
     // Start is called before the first frame update
@@ -55,25 +56,28 @@ public class BattleSystem : MonoBehaviour
         enemySelectionMenu.SetActive(false); // enemy selection menu disabled 
         state = BattleState.Battle; //change our state to the battle state 
         bottomTextPopUp.SetActive(true); //enable our bottom text
-        
+
         //loop through all our battlers 
-            //-> do their approriate action 
+        //-> do their approriate action 
 
         for (int i = 0; i < allBattlers.Count; i++)
         {
-            switch(allBattlers[i].BattleAction)
+            if (state == BattleState.Battle)
             {
-                case BattleEntities.Action.Attack:
-                    //do the attack
-                    //Debug.Log(allBattlers[i].Name + "is attacking: " + allBattlers[allBattlers[i].Target].Name);
-                    yield return StartCoroutine(AttackRoutine(i));
-                    break;
-                case BattleEntities.Action.Run:
-                    //run
-                    break;
-                default:
-                    Debug.Log("Error - incorrect battle action");
-                    break;
+                switch (allBattlers[i].BattleAction)
+                {
+                    case BattleEntities.Action.Attack:
+                        //do the attack
+                        //Debug.Log(allBattlers[i].Name + "is attacking: " + allBattlers[allBattlers[i].Target].Name);
+                        yield return StartCoroutine(AttackRoutine(i));
+                        break;
+                    case BattleEntities.Action.Run:
+                        //run
+                        break;
+                    default:
+                        Debug.Log("Error - incorrect battle action");
+                        break;
+                }
             }
         }
 
@@ -130,13 +134,33 @@ public class BattleSystem : MonoBehaviour
         }
 
         // enemies turn 
-        // get random party member (target)
-        // attack selected party member (attack action)
-        // wait a few seconds 
-        // kill the party member 
+        if (allBattlers[i].IsPlayer == false)
+        {
+            BattleEntities currAttacker = allBattlers[i];
+            currAttacker.SetTarget(GetRandomPartyMember());// get random party member (target)
+            BattleEntities currTarget = allBattlers[(int)currAttacker.Target];
 
-        // if no party members remain 
-        // -> we lost the battle 
+            AttackAction(currAttacker, currTarget);// attack selected party member (attack action)
+            yield return new WaitForSeconds(TURN_DURATION); // wait a few seconds
+
+            if (currTarget.CurrHealth <= 0)
+            {
+                // kill the party member 
+                bottomText.text = string.Format("{0} defeated {1}", currAttacker.Name, currTarget.Name);
+                yield return new WaitForSeconds(TURN_DURATION); // wait a few seconds
+                playerBattlers.Remove(currTarget);
+                allBattlers.Remove(currTarget);
+
+                if(playerBattlers.Count <=0) // if no party members remain 
+                {
+                    // -> we lost the battle 
+                    state = BattleState.Lost;
+                    bottomText.text = LOSE_MESSAGE;
+                    yield return new WaitForSeconds(TURN_DURATION); // wait a few seconds 
+                    Debug.Log("Game Over");
+                }
+            }
+        }
     }
 
     private void CreatePartyEntities()
