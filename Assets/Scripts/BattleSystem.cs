@@ -95,6 +95,10 @@ public class BattleSystem : MonoBehaviour
         {
             // attack selected enemy (attack action)
             BattleEntities currAttacker = allBattlers[i];
+            if (allBattlers[currAttacker.Target].IsPlayer == true || currAttacker.Target >= allBattlers.Count) 
+            {
+                currAttacker.SetTarget(GetRandomEnemy());
+            }
             BattleEntities currTarget = allBattlers[currAttacker.Target];
             AttackAction(currAttacker, currTarget);
 
@@ -126,6 +130,7 @@ public class BattleSystem : MonoBehaviour
         }
 
         // enemies turn 
+        // get random party member (target)
         // attack selected party member (attack action)
         // wait a few seconds 
         // kill the party member 
@@ -257,6 +262,33 @@ public class BattleSystem : MonoBehaviour
         currTarget.BattleVisuals.PlayHitAnimation(); // play their hit animation 
         currTarget.UpdateUI(); // update the UI 
         bottomText.text = string.Format("{0} attacks {1} for {2} damage", currAttacker.Name, currTarget.Name,damage);
+    }
+
+    private int GetRandomPartyMember()
+    {
+        List<int> partyMembers = new List<int>();// create a temporary list of type int (index)
+        // find all party members -> add them to our list 
+        for (int i = 0; i < allBattlers.Count; i++)
+        {
+            if (allBattlers[i].IsPlayer == true) // we have a party member 
+            {
+                partyMembers.Add(i);
+            }
+        }
+        return partyMembers[Random.Range(0, partyMembers.Count)]; //return a random party member
+    }
+
+    private int GetRandomEnemy()
+    {
+        List<int> enemies = new List<int>();
+        for (int i = 0; i < allBattlers.Count; i++)
+        {
+            if (allBattlers[i].IsPlayer == false)
+            {
+                enemies.Add(i);
+            }
+        }
+        return enemies[Random.Range(0, enemies.Count)];
     }
 }
 
